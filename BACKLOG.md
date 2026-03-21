@@ -14,7 +14,7 @@
 | 1.4 | Definir Pydantic models (PipelineState e sub-models) | P0 | done | MVP |
 | 1.5 | Criar design system base (tokens, components, rules) | P0 | done | MVP |
 | 1.6 | Criar UI JSON Schema compartilhado em `/schemas` | P0 | done | MVP |
-| 1.7 | Configurar ruff + pytest | P1 | todo | MVP |
+| 1.7 | Configurar ruff + pytest | P1 | done | MVP |
 | 1.8 | Configurar pre-commit hooks | P2 | todo | Post-MVP |
 
 ---
@@ -51,9 +51,9 @@
 
 | # | Task | Priority | Status | Scope |
 |---|------|----------|--------|-------|
-| 4.1 | Definir StateGraph com nodes e edges | P0 | todo | MVP |
-| 4.2 | Implementar pipeline MVP (Planner → UIGen → Mapper → Validator) | P0 | todo | MVP |
-| 4.3 | Adicionar retry por node (2x) | P1 | todo | MVP |
+| 4.1 | Definir StateGraph com nodes e edges | P0 | done | MVP |
+| 4.2 | Implementar pipeline MVP (Planner → UIGen → Mapper → Validator) | P0 | done | MVP |
+| 4.3 | Adicionar retry por node (2x) | P1 | done | MVP |
 | 4.4 | Implementar pipeline completa (todos os 7 agents) | P1 | todo | Post-MVP |
 | 4.5 | Adicionar conditional branching e partial execution | P2 | todo | Post-MVP |
 | 4.6 | State persistence para resume de pipeline | P2 | todo | Post-MVP |
@@ -92,12 +92,12 @@
 
 | # | Task | Priority | Status | Scope |
 |---|------|----------|--------|-------|
-| 7.1 | Testes unitários dos Pydantic models | P1 | todo | MVP |
-| 7.2 | Testes dos agents com mock LLM | P1 | todo | MVP |
-| 7.3 | Testes da pipeline LangGraph (integration) | P1 | todo | MVP |
-| 7.4 | Testes dos API endpoints | P1 | todo | MVP |
-| 7.5 | Testes do Validation Agent contra design system | P0 | todo | MVP |
-| 7.6 | E2E test: prompt → UI JSON válido | P1 | todo | Post-MVP |
+| 7.1 | Testes unitários dos Pydantic models | P1 | done | MVP |
+| 7.2 | Testes dos agents com mock LLM | P1 | done | MVP |
+| 7.3 | Testes da pipeline LangGraph (integration) | P1 | done | MVP |
+| 7.4 | Testes dos API endpoints | P1 | done | MVP |
+| 7.5 | Testes do Validation Agent contra design system | P0 | done | MVP |
+| 7.6 | E2E test: prompt → UI JSON válido | P1 | done | Post-MVP |
 
 ---
 
