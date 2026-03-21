@@ -1,6 +1,13 @@
 """Shared pytest configuration and fixtures."""
 
+from pathlib import Path
+
 import pytest
+from dotenv import load_dotenv
+
+# Load .env from project root so GEMINI_API_KEY is available during test collection
+_project_root = Path(__file__).resolve().parents[2]
+load_dotenv(_project_root / ".env")
 
 
 def pytest_collection_modifyitems(

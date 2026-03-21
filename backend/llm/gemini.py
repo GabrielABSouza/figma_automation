@@ -1,5 +1,6 @@
+import json
 import logging
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from google import genai
 from google.genai import errors, types
@@ -12,12 +13,55 @@ T = TypeVar("T", bound=BaseModel)
 logger = logging.getLogger(__name__)
 
 
+def _has_ref(schema: Any) -> bool:
+    """Check if a JSON schema contains $ref (recursive or cross-referenced types)."""
+    if isinstance(schema, dict):
+        if "$ref" in schema:
+            return True
+        return any(_has_ref(v) for v in schema.values())
+    if isinstance(schema, list):
+        return any(_has_ref(item) for item in schema)
+    return False
+
+
+def _strip_additional_properties(schema: dict[str, Any]) -> dict[str, Any]:
+    """Recursively strip 'additionalProperties' from a JSON schema.
+
+    The Gemini API (non-VertexAI) does not support additionalProperties.
+    Pydantic v2 emits it for dict[str, Any] fields, so we clean it here.
+    """
+    schema.pop("additionalProperties", None)
+
+    for prop in schema.get("properties", {}).values():
+        if isinstance(prop, dict):
+            _strip_additional_properties(prop)
+
+    if "items" in schema and isinstance(schema["items"], dict):
+        _strip_additional_properties(schema["items"])
+
+    for key in ("allOf", "anyOf", "oneOf"):
+        if key in schema:
+            for sub in schema[key]:
+                if isinstance(sub, dict):
+                    _strip_additional_properties(sub)
+
+    for ref_def in schema.get("$defs", {}).values():
+        if isinstance(ref_def, dict):
+            _strip_additional_properties(ref_def)
+
+    return schema
+
+
 class GeminiProvider:
     """Google Gemini LLM provider implementing the LLMProvider protocol.
 
     Uses the google-genai SDK async client with native structured JSON output.
     The SDK handles HTTP-level retries (429/5xx) automatically. This class adds
     application-level retry when JSON passes HTTP but fails Pydantic validation.
+
+    For schemas with recursive $ref (e.g., UIComponent with children), the SDK
+    cannot handle response_schema natively, so the schema is injected into the
+    prompt text instead and only response_mime_type="application/json" is used.
     """
 
     def __init__(
@@ -44,12 +88,33 @@ class GeminiProvider:
         system_prompt: str | None = None,
     ) -> T:
         """Generate structured output from Gemini."""
-        config = types.GenerateContentConfig(
-            response_schema=output_schema,
-            response_mime_type="application/json",
-            temperature=self._temperature,
-            max_output_tokens=self._max_output_tokens,
-        )
+        json_schema = output_schema.model_json_schema()
+        uses_ref = _has_ref(json_schema)
+
+        if uses_ref:
+            # Recursive schemas can't be passed to response_schema (SDK hits
+            # infinite recursion). Instead, inject the schema into the prompt
+            # and rely on response_mime_type to enforce JSON output.
+            schema_text = json.dumps(json_schema, indent=2)
+            schema_suffix = (
+                f"\n\nYou MUST output valid JSON matching this exact schema:\n"
+                f"```json\n{schema_text}\n```"
+            )
+            prompt = prompt + schema_suffix
+            config = types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=self._temperature,
+                max_output_tokens=self._max_output_tokens,
+            )
+        else:
+            clean_schema = _strip_additional_properties(json_schema)
+            config = types.GenerateContentConfig(
+                response_schema=clean_schema,
+                response_mime_type="application/json",
+                temperature=self._temperature,
+                max_output_tokens=self._max_output_tokens,
+            )
+
         if system_prompt:
             config.system_instruction = system_prompt
 
