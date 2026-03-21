@@ -8,8 +8,9 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3-flash-preview"
     gemini_temperature: float = 0.1
-    gemini_max_output_tokens: int = 65536
+    gemini_max_output_tokens: int = 16384
     gemini_max_retries: int = 2
+    gemini_thinking_budget: int = 1024
 
     # Figma
     figma_access_token: str = ""

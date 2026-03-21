@@ -71,6 +71,7 @@ class GeminiProvider:
         temperature: float = 0.1,
         max_output_tokens: int = 8192,
         max_retries: int = 2,
+        thinking_budget: int = 1024,
     ) -> None:
         if not api_key:
             raise ValueError("Gemini API key is required")
@@ -79,6 +80,7 @@ class GeminiProvider:
         self._temperature = temperature
         self._max_output_tokens = max_output_tokens
         self._max_retries = max_retries
+        self._thinking_budget = thinking_budget
 
     async def generate(
         self,
@@ -90,6 +92,8 @@ class GeminiProvider:
         """Generate structured output from Gemini."""
         json_schema = output_schema.model_json_schema()
         uses_ref = _has_ref(json_schema)
+
+        thinking_config = types.ThinkingConfig(thinking_budget=self._thinking_budget)
 
         if uses_ref:
             # Recursive schemas can't be passed to response_schema (SDK hits
@@ -105,6 +109,7 @@ class GeminiProvider:
                 response_mime_type="application/json",
                 temperature=self._temperature,
                 max_output_tokens=self._max_output_tokens,
+                thinking_config=thinking_config,
             )
         else:
             clean_schema = _strip_additional_properties(json_schema)
@@ -113,6 +118,7 @@ class GeminiProvider:
                 response_mime_type="application/json",
                 temperature=self._temperature,
                 max_output_tokens=self._max_output_tokens,
+                thinking_config=thinking_config,
             )
 
         if system_prompt:

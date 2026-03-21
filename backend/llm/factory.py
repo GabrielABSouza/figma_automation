@@ -13,6 +13,7 @@ def create_llm_provider() -> LLMProvider:
         temperature=settings.gemini_temperature,
         max_output_tokens=settings.gemini_max_output_tokens,
         max_retries=settings.gemini_max_retries,
+        thinking_budget=settings.gemini_thinking_budget,
     )
 
 
