@@ -77,12 +77,12 @@
 
 | # | Task | Priority | Status | Scope |
 |---|------|----------|--------|-------|
-| 6.1 | Setup projeto TypeScript do plugin | P0 | todo | MVP |
-| 6.2 | Implementar `componentMapper.ts` (JSON type → Figma component) | P0 | todo | MVP |
-| 6.3 | Implementar `nodeFactory.ts` (create Figma nodes) | P0 | todo | MVP |
-| 6.4 | Implementar `renderer.ts` (orchestrate rendering) | P0 | todo | MVP |
-| 6.5 | Suporte a frame, text e card (MVP components) | P0 | todo | MVP |
-| 6.6 | Gerar tipos TS automaticamente do ui-schema.json | P1 | todo | MVP |
+| 6.1 | Setup projeto TypeScript do plugin | P0 | done | MVP |
+| 6.2 | Implementar `componentMapper.ts` (JSON type → Figma component) | P0 | done | MVP |
+| 6.3 | Implementar `nodeFactory.ts` (create Figma nodes) | P0 | done | MVP |
+| 6.4 | Implementar `renderer.ts` (orchestrate rendering) | P0 | done | MVP |
+| 6.5 | Suporte a frame, text e card (MVP components) | P0 | done | MVP |
+| 6.6 | Gerar tipos TS automaticamente do ui-schema.json | P1 | done | MVP |
 | 6.7 | Suporte a todos os components do design system | P1 | todo | Post-MVP |
 | 6.8 | UI do plugin para input e feedback | P2 | todo | Post-MVP |
 

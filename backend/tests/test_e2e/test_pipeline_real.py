@@ -9,12 +9,14 @@ These tests are SLOW and cost real API credits. They are skipped by default.
 import os
 
 import pytest
+from httpx import ASGITransport, AsyncClient
 
 from backend.agents.mapper import map_to_design_system
 from backend.agents.planner import plan
 from backend.agents.ui_generator import generate_ui
 from backend.agents.validator import validate
 from backend.llm.factory import reset_llm
+from backend.main import app
 from backend.orchestrator.state import PipelineState
 
 # Skip all tests in this module unless GEMINI_API_KEY is set and marker is used
@@ -109,3 +111,33 @@ class TestRealPipeline:
         # The pipeline completed without crashing — that's the key assertion.
         # Validation may or may not pass depending on LLM output quality.
         assert len(state.validated_uis) == len(state.mapped_uis)
+
+    async def test_generate_ui_endpoint_real(self) -> None:
+        """POST /generate-ui with real Gemini API — full HTTP integration."""
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.post(
+                "/generate-ui",
+                json={"prompt": "Build a simple landing page with hero and pricing"},
+                timeout=120.0,
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+
+        print(f"\nsuccess: {data['success']}")
+        print(f"errors: {data['errors']}")
+        print(f"screen_count: {data['metadata'].get('screen_count')}")
+
+        assert data["success"] is True
+        assert len(data["screens"]) >= 1
+        assert data["errors"] == []
+        assert data["metadata"]["schema_version"] == "1.0.0"
+
+        for screen in data["screens"]:
+            print(f"\n--- {screen['screen_name']} ---")
+            print(f"  Valid: {screen['validation']['is_valid']}")
+            print(f"  Errors: {screen['validation']['errors']}")
+            print(f"  Components: {len(screen['components'])}")
+            assert screen["screen_name"] != ""
+            assert len(screen["components"]) >= 1
