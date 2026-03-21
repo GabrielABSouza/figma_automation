@@ -64,11 +64,11 @@
 
 | # | Task | Priority | Status | Scope |
 |---|------|----------|--------|-------|
-| 5.1 | Implementar `POST /generate-ui` com pipeline real | P0 | todo | MVP |
-| 5.2 | Implementar `GET /design-system` | P1 | todo | MVP |
+| 5.1 | Implementar `POST /generate-ui` com pipeline real | P0 | done | MVP |
+| 5.2 | Implementar `GET /design-system` | P1 | done | MVP |
 | 5.3 | Implementar `POST /iterate-ui` com feedback loop | P2 | todo | Post-MVP |
-| 5.4 | Adicionar request/response models com validação | P1 | todo | MVP |
-| 5.5 | Error handling padronizado (error codes, messages) | P1 | todo | MVP |
+| 5.4 | Adicionar request/response models com validação | P1 | done | MVP |
+| 5.5 | Error handling padronizado (error codes, messages) | P1 | done | MVP |
 | 5.6 | Rate limiting e autenticação básica | P2 | todo | Post-MVP |
 
 ---

@@ -1,11 +1,33 @@
-from fastapi import FastAPI
+"""FastAPI application entrypoint."""
+
+import logging
+
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from backend.api.routes import router
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Figma Automation Pipeline",
     description="AI-powered pipeline that converts product intent into structured UI screens",
     version="0.1.0",
 )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Catch-all handler for unexpected exceptions."""
+    logger.exception("Unhandled exception on %s %s", request.method, request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": "internal_server_error",
+            "detail": str(exc),
+        },
+    )
+
 
 app.include_router(router)
