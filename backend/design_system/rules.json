@@ -1,0 +1,28 @@
+{
+  "layout": {
+    "max_width": 1440,
+    "grid_columns": 12,
+    "gutter": 24,
+    "margin": 48,
+    "mobile_breakpoint": 768,
+    "tablet_breakpoint": 1024
+  },
+  "hierarchy": {
+    "max_nesting_depth": 4,
+    "section_min_padding": "md",
+    "heading_must_precede_content": true
+  },
+  "constraints": {
+    "no_orphan_components": true,
+    "all_components_must_exist_in_design_system": true,
+    "all_tokens_must_exist": true,
+    "max_components_per_screen": 50,
+    "button_must_have_label": true,
+    "input_must_have_label": true
+  },
+  "accessibility": {
+    "min_contrast_ratio": 4.5,
+    "min_touch_target": 44,
+    "text_min_size": 12
+  }
+}

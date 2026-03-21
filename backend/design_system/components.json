@@ -1,0 +1,76 @@
+{
+  "components": [
+    {
+      "type": "button",
+      "variants": ["primary", "secondary", "ghost", "danger"],
+      "props": {
+        "label": "string",
+        "size": ["sm", "md", "lg"],
+        "disabled": "boolean",
+        "icon": "string|null"
+      }
+    },
+    {
+      "type": "card",
+      "variants": ["default", "outlined", "elevated"],
+      "props": {
+        "title": "string|null",
+        "padding": "spacing_token"
+      }
+    },
+    {
+      "type": "input",
+      "variants": ["text", "email", "password", "search"],
+      "props": {
+        "label": "string",
+        "placeholder": "string",
+        "required": "boolean",
+        "error": "string|null"
+      }
+    },
+    {
+      "type": "text",
+      "variants": ["heading-1", "heading-2", "heading-3", "body", "body-small", "caption"],
+      "props": {
+        "content": "string",
+        "color": "color_token"
+      }
+    },
+    {
+      "type": "navbar",
+      "variants": ["top", "side"],
+      "props": {
+        "items": "nav_item[]",
+        "logo": "string|null"
+      }
+    },
+    {
+      "type": "table",
+      "variants": ["default", "compact", "striped"],
+      "props": {
+        "columns": "column_def[]",
+        "rows": "number"
+      }
+    },
+    {
+      "type": "avatar",
+      "variants": ["circle", "square"],
+      "props": {
+        "size": ["sm", "md", "lg"],
+        "initials": "string|null"
+      }
+    },
+    {
+      "type": "badge",
+      "variants": ["default", "success", "warning", "error"],
+      "props": {
+        "label": "string"
+      }
+    },
+    {
+      "type": "divider",
+      "variants": ["horizontal", "vertical"],
+      "props": {}
+    }
+  ]
+}

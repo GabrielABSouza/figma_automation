@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FigmaAutomationUISchema",
+  "description": "Shared contract between the agent pipeline (Python) and Figma renderer (TypeScript). Auto-generated from Pydantic models — do not edit manually.",
+  "type": "object",
+  "properties": {
+    "screens": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Screen"
+      }
+    },
+    "metadata": {
+      "$ref": "#/$defs/Metadata"
+    }
+  },
+  "required": ["screens", "metadata"],
+  "$defs": {
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "schema_version": { "type": "string", "const": "1.0.0" },
+        "pipeline_run_id": { "type": "string" },
+        "generated_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["schema_version"]
+    },
+    "Screen": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "layout": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/LayoutNode" }
+        },
+        "components": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UIComponent" }
+        },
+        "tokens": { "type": "object" }
+      },
+      "required": ["name", "layout", "components"]
+    },
+    "LayoutNode": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["section", "row", "column", "stack"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/LayoutNode" }
+        },
+        "component_refs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "References to component IDs placed in this layout node"
+        }
+      },
+      "required": ["id", "type"]
+    },
+    "UIComponent": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "description": "Must match a component type in the design system"
+        },
+        "variant": { "type": "string" },
+        "props": { "type": "object" },
+        "tokens": {
+          "type": "object",
+          "description": "Design token overrides for this component"
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UIComponent" }
+        }
+      },
+      "required": ["id", "type"]
+    }
+  }
+}
