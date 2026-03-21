@@ -47,3 +47,6 @@ quote-style = "double"
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
 asyncio_mode = "auto"
+markers = [
+    "real_api: tests that call the real Gemini API (deselected by default)",
+]
