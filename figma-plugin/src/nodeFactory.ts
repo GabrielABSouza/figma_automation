@@ -170,9 +170,11 @@ export function createInput(component: UIComponent): FrameNode {
   inputFrame.name = `${component.id}_field`;
   inputFrame.layoutMode = "HORIZONTAL";
   inputFrame.primaryAxisAlignItems = "CENTER";
+  inputFrame.counterAxisAlignItems = "CENTER";
   inputFrame.resize(320, 44);
-  inputFrame.primaryAxisSizingMode = "FIXED";
+  inputFrame.primaryAxisSizingMode = "AUTO";
   inputFrame.counterAxisSizingMode = "FIXED";
+  inputFrame.layoutAlign = "STRETCH";
   inputFrame.paddingLeft = 12;
   inputFrame.paddingRight = 12;
   inputFrame.paddingTop = 10;
@@ -350,14 +352,18 @@ export function createTable(component: UIComponent): FrameNode {
       );
     }
   }
-  frame.appendChild(createTableRow(headers, true));
+  var headerRow = createTableRow(headers, true);
+  headerRow.layoutAlign = "STRETCH";
+  frame.appendChild(headerRow);
 
   for (var ri = 0; ri < rowCount; ri++) {
     var cells: string[] = [];
     for (var cj = 0; cj < columns.length; cj++) {
       cells.push("Row " + (ri + 1) + ", Col " + (cj + 1));
     }
-    frame.appendChild(createTableRow(cells, false));
+    var dataRow = createTableRow(cells, false);
+    dataRow.layoutAlign = "STRETCH";
+    frame.appendChild(dataRow);
   }
 
   applyFrameTokens(frame, component.tokens);
@@ -461,11 +467,12 @@ export function createDivider(component: UIComponent): FrameNode {
   const frame = figma.createFrame();
   frame.name = component.id;
 
-  const divVariant = (component.props["variant"] as string) ?? "horizontal";
+  const divVariant = (component.props["variant"] as string) || "horizontal";
   if (divVariant === "vertical") {
     frame.resize(1, 24);
   } else {
-    frame.resize(320, 1);
+    frame.resize(100, 1);
+    frame.layoutAlign = "STRETCH";
   }
 
   const divColor = resolveColor(component.tokens["color"] ?? "border");

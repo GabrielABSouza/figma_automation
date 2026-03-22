@@ -49,28 +49,29 @@ function renderComponent(
       parentFrame.appendChild(titleText);
     }
 
+    const VERTICAL_PARENTS = ["section", "column", "stack", "card"];
+    const GROWABLE_IN_ROW = ["card", "column", "section", "input", "table", "stack"];
+
     for (const child of component.children) {
       const childNode = renderComponent(child, component.type);
       if (childNode) {
         parentFrame.appendChild(childNode);
 
-        // Cards and columns inside rows grow equally
+        // In vertical containers, ALL children stretch to fill width
         if (
-          component.type === "row" &&
-          (child.type === "card" || child.type === "column") &&
-          "layoutGrow" in childNode
-        ) {
-          (childNode as FrameNode).layoutGrow = 1;
-        }
-
-        // Horizontal dividers stretch to fill parent width
-        if (
-          child.type === "divider" &&
-          ((child.props["variant"] as string) ?? "horizontal") ===
-            "horizontal" &&
+          VERTICAL_PARENTS.indexOf(component.type) >= 0 &&
           "layoutAlign" in childNode
         ) {
           (childNode as FrameNode).layoutAlign = "STRETCH";
+        }
+
+        // In rows, growable children fill space equally
+        if (
+          component.type === "row" &&
+          GROWABLE_IN_ROW.indexOf(child.type) >= 0 &&
+          "layoutGrow" in childNode
+        ) {
+          (childNode as FrameNode).layoutGrow = 1;
         }
       }
     }

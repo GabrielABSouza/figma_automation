@@ -48,4 +48,9 @@ export interface RenderMessage {
   payload: GenerateUIResponse;
 }
 
-export type PluginMessage = RenderMessage;
+export interface RenderDesignMessage {
+  type: "render-design";
+  payload: Record<string, unknown>;
+}
+
+export type PluginMessage = RenderMessage | RenderDesignMessage;

@@ -62,7 +62,7 @@
 <div id="tab-generate" class="tab-content active">
   <div class="field">
     <label for="api-url">API URL</label>
-    <input type="text" id="api-url" value="http://localhost:8000" />
+    <input type="text" id="api-url" value="http://localhost:9000" />
   </div>
   <div class="field prompt-area">
     <label for="prompt-input">Describe your product</label>
@@ -115,7 +115,7 @@
     status.className = 'status';
     progressBar.classList.add('active');
 
-    var url = apiUrl.replace(/\/$/, '') + '/generate-ui';
+    var url = apiUrl.replace(/\/$/, '') + '/generate-design';
 
     fetch(url, {
       method: 'POST',
@@ -141,7 +141,7 @@
       status.textContent = 'Received ' + data.screens.length + ' screen(s). Rendering...';
       status.className = 'status';
 
-      parent.postMessage({ pluginMessage: { type: 'render', payload: data } }, '*');
+      parent.postMessage({ pluginMessage: { type: 'render-design', payload: data } }, '*');
     })
     .catch(function(err) {
       progressBar.classList.remove('active');
