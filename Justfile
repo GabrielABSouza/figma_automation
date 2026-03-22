@@ -5,7 +5,7 @@ default:
 
 # Backend
 dev:
-    uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+    uvicorn backend.main:app --reload --host 0.0.0.0 --port 9000
 
 test:
     pytest backend/tests/ -v

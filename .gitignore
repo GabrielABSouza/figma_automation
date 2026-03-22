@@ -31,6 +31,9 @@ figma-plugin/dist/
 .coverage
 htmlcov/
 
+# Debug output
+debug/
+
 # Database
 *.db
 *.sqlite3
