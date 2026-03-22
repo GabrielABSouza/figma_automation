@@ -199,7 +199,8 @@ describe("createDivider", function () {
       tokens: {},
       children: [],
     }) as unknown as Record<string, unknown>;
-    expect(node.resize).toHaveBeenCalledWith(320, 1);
+    expect(node.resize).toHaveBeenCalledWith(100, 1);
+    expect(node.layoutAlign).toBe("STRETCH");
   });
 
   it("creates vertical divider", function () {
