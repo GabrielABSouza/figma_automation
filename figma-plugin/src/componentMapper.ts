@@ -7,6 +7,12 @@ import {
   createText,
   createCard,
   createButton,
+  createInput,
+  createNavbar,
+  createTable,
+  createAvatar,
+  createBadge,
+  createDivider,
 } from "./nodeFactory";
 
 /** Factory function signature: takes a UIComponent, returns a SceneNode. */
@@ -21,6 +27,12 @@ const FACTORY_MAP: Record<string, ComponentFactory> = {
   text: createText,
   card: createCard,
   button: createButton,
+  input: createInput,
+  navbar: createNavbar,
+  table: createTable,
+  avatar: createAvatar,
+  badge: createBadge,
+  divider: createDivider,
 };
 
 /** Check if a component type is a layout (container) type. */

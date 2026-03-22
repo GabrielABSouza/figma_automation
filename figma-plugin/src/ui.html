@@ -1,37 +1,165 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, system-ui, sans-serif; }
   body { padding: 16px; background: #fff; }
-  h2 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #0F172A; }
-  textarea {
-    width: 100%; height: 240px; padding: 8px; font-size: 12px; font-family: monospace;
-    border: 1px solid #E2E8F0; border-radius: 8px; resize: vertical;
+
+  .tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 1px solid #E2E8F0; }
+  .tab {
+    padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer;
+    background: none; border: none; border-bottom: 2px solid transparent; color: #475569;
   }
-  textarea:focus { outline: none; border-color: #2563EB; }
-  button {
+  .tab.active { color: #2563EB; border-bottom-color: #2563EB; }
+  .tab:hover { color: #1D4ED8; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  label { display: block; font-size: 12px; font-weight: 500; color: #475569; margin-bottom: 4px; }
+  h2 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #0F172A; }
+
+  input[type="text"], textarea {
+    width: 100%; padding: 8px; font-size: 12px;
+    border: 1px solid #E2E8F0; border-radius: 8px;
+  }
+  input[type="text"]:focus, textarea:focus { outline: none; border-color: #2563EB; }
+  textarea.json-area { height: 240px; font-family: monospace; resize: vertical; }
+  .prompt-area textarea { font-family: Inter, system-ui, sans-serif; height: 100px; resize: vertical; }
+
+  .field { margin-bottom: 12px; }
+
+  button.primary {
     margin-top: 12px; width: 100%; padding: 10px; font-size: 14px; font-weight: 600;
     background: #2563EB; color: #fff; border: none; border-radius: 8px; cursor: pointer;
   }
-  button:hover { background: #1D4ED8; }
-  button:disabled { background: #94A3B8; cursor: not-allowed; }
+  button.primary:hover { background: #1D4ED8; }
+  button.primary:disabled { background: #94A3B8; cursor: not-allowed; }
+
   .status { margin-top: 8px; font-size: 12px; color: #475569; }
   .error { color: #DC2626; }
+  .success { color: #16A34A; }
+
+  .progress-bar {
+    margin-top: 8px; height: 4px; background: #E2E8F0; border-radius: 2px;
+    overflow: hidden; display: none;
+  }
+  .progress-bar.active { display: block; }
+  .progress-bar-fill {
+    height: 100%; background: #2563EB; border-radius: 2px;
+    width: 40%;
+    animation: progress-indeterminate 1.5s ease-in-out infinite;
+  }
+  @keyframes progress-indeterminate {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(350%); }
+  }
 </style>
 
-<h2>Paste API Response JSON</h2>
-<textarea id="json-input" placeholder='{"success": true, "screens": [...], ...}'></textarea>
-<button id="render-btn" onclick="handleRender()">Render in Figma</button>
-<div id="status" class="status"></div>
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('generate')">Generate</button>
+  <button class="tab" onclick="switchTab('paste')">Paste JSON</button>
+</div>
+
+<!-- Generate Tab -->
+<div id="tab-generate" class="tab-content active">
+  <div class="field">
+    <label for="api-url">API URL</label>
+    <input type="text" id="api-url" value="http://localhost:8000" />
+  </div>
+  <div class="field prompt-area">
+    <label for="prompt-input">Describe your product</label>
+    <textarea id="prompt-input" placeholder="e.g. Build a SaaS dashboard for financial tracking with analytics, user management, and settings pages"></textarea>
+  </div>
+  <button class="primary" id="generate-btn" onclick="handleGenerate()">Generate UI</button>
+  <div class="progress-bar" id="progress-bar"><div class="progress-bar-fill"></div></div>
+  <div id="generate-status" class="status"></div>
+</div>
+
+<!-- Paste JSON Tab -->
+<div id="tab-paste" class="tab-content">
+  <h2>Paste API Response JSON</h2>
+  <textarea id="json-input" class="json-area" placeholder='{"success": true, "screens": [...], ...}'></textarea>
+  <button class="primary" id="render-btn" onclick="handleRender()">Render in Figma</button>
+  <div id="paste-status" class="status"></div>
+</div>
 
 <script>
+  function switchTab(tab) {
+    var tabs = document.querySelectorAll('.tab');
+    var contents = document.querySelectorAll('.tab-content');
+    for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
+    for (var i = 0; i < contents.length; i++) { contents[i].classList.remove('active'); }
+
+    if (tab === 'generate') {
+      tabs[0].classList.add('active');
+      document.getElementById('tab-generate').classList.add('active');
+    } else {
+      tabs[1].classList.add('active');
+      document.getElementById('tab-paste').classList.add('active');
+    }
+  }
+
+  function handleGenerate() {
+    var apiUrl = document.getElementById('api-url').value.trim();
+    var prompt = document.getElementById('prompt-input').value.trim();
+    var status = document.getElementById('generate-status');
+    var btn = document.getElementById('generate-btn');
+    var progressBar = document.getElementById('progress-bar');
+
+    if (!prompt) {
+      status.textContent = 'Please enter a product description.';
+      status.className = 'status error';
+      return;
+    }
+
+    btn.disabled = true;
+    status.textContent = 'Generating UI... This may take 30-60 seconds.';
+    status.className = 'status';
+    progressBar.classList.add('active');
+
+    var url = apiUrl.replace(/\/$/, '') + '/generate-ui';
+
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt }),
+    })
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('API returned status ' + response.status);
+      }
+      return response.json();
+    })
+    .then(function(data) {
+      progressBar.classList.remove('active');
+
+      if (!data.success || !Array.isArray(data.screens)) {
+        status.textContent = 'API error: ' + (data.errors ? data.errors.join(', ') : 'Unknown error');
+        status.className = 'status error';
+        btn.disabled = false;
+        return;
+      }
+
+      status.textContent = 'Received ' + data.screens.length + ' screen(s). Rendering...';
+      status.className = 'status';
+
+      parent.postMessage({ pluginMessage: { type: 'render', payload: data } }, '*');
+    })
+    .catch(function(err) {
+      progressBar.classList.remove('active');
+      status.textContent = 'Failed to connect: ' + err.message;
+      status.className = 'status error';
+      btn.disabled = false;
+    });
+  }
+
   function handleRender() {
-    var textarea = document.getElementById("json-input");
-    var status = document.getElementById("status");
-    var btn = document.getElementById("render-btn");
+    var textarea = document.getElementById('json-input');
+    var status = document.getElementById('paste-status');
+    var btn = document.getElementById('render-btn');
 
     var raw = textarea.value.trim();
     if (!raw) {
-      status.textContent = "Please paste JSON first.";
-      status.className = "status error";
+      status.textContent = 'Please paste JSON first.';
+      status.className = 'status error';
       return;
     }
 
@@ -39,37 +167,49 @@
     try {
       parsed = JSON.parse(raw);
     } catch (e) {
-      status.textContent = "Invalid JSON: " + e.message;
-      status.className = "status error";
+      status.textContent = 'Invalid JSON: ' + e.message;
+      status.className = 'status error';
       return;
     }
 
     if (!parsed.success || !Array.isArray(parsed.screens)) {
-      status.textContent = "JSON must have success=true and screens array.";
-      status.className = "status error";
+      status.textContent = 'JSON must have success=true and screens array.';
+      status.className = 'status error';
       return;
     }
 
     btn.disabled = true;
-    status.textContent = "Rendering...";
-    status.className = "status";
+    status.textContent = 'Rendering...';
+    status.className = 'status';
 
-    parent.postMessage({ pluginMessage: { type: "render", payload: parsed } }, "*");
+    parent.postMessage({ pluginMessage: { type: 'render', payload: parsed } }, '*');
   }
 
-  window.onmessage = function (event) {
+  window.onmessage = function(event) {
     var msg = event.data.pluginMessage;
-    var status = document.getElementById("status");
-    var btn = document.getElementById("render-btn");
+    if (!msg) return;
 
-    if (msg.type === "render-complete") {
-      status.textContent = "Done! Rendered " + msg.screenCount + " screen(s).";
-      status.className = "status";
-      btn.disabled = false;
-    } else if (msg.type === "render-error") {
-      status.textContent = "Error: " + msg.error;
-      status.className = "status error";
-      btn.disabled = false;
+    var genStatus = document.getElementById('generate-status');
+    var pasteStatus = document.getElementById('paste-status');
+    var genBtn = document.getElementById('generate-btn');
+    var renderBtn = document.getElementById('render-btn');
+
+    if (msg.type === 'render-complete') {
+      var successMsg = 'Done! Rendered ' + msg.screenCount + ' screen(s).';
+      genStatus.textContent = successMsg;
+      genStatus.className = 'status success';
+      pasteStatus.textContent = successMsg;
+      pasteStatus.className = 'status success';
+      genBtn.disabled = false;
+      renderBtn.disabled = false;
+    } else if (msg.type === 'render-error') {
+      var errorMsg = 'Error: ' + msg.error;
+      genStatus.textContent = errorMsg;
+      genStatus.className = 'status error';
+      pasteStatus.textContent = errorMsg;
+      pasteStatus.className = 'status error';
+      genBtn.disabled = false;
+      renderBtn.disabled = false;
     }
   };
 </script>

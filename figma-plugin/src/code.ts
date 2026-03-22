@@ -1,7 +1,7 @@
 import { GenerateUIResponse, PluginMessage } from "./types";
 import { renderAllScreens } from "./renderer";
 
-figma.showUI(__html__, { width: 400, height: 400 });
+figma.showUI(__html__, { width: 420, height: 520 });
 
 figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === "render") {

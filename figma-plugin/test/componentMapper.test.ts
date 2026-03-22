@@ -26,13 +26,25 @@ describe("isLayoutType", () => {
     expect(isLayoutType("card")).toBe(false);
   });
 
-  it("rejects button", () => {
-    expect(isLayoutType("button")).toBe(false);
+  it("rejects all leaf types", () => {
+    for (const t of [
+      "text",
+      "card",
+      "button",
+      "input",
+      "navbar",
+      "table",
+      "avatar",
+      "badge",
+      "divider",
+    ]) {
+      expect(isLayoutType(t)).toBe(false);
+    }
   });
 });
 
 describe("isSupported", () => {
-  it("supports all MVP types", () => {
+  it("supports all design system types", () => {
     for (const t of [
       "section",
       "row",
@@ -41,17 +53,20 @@ describe("isSupported", () => {
       "text",
       "card",
       "button",
+      "input",
+      "navbar",
+      "table",
+      "avatar",
+      "badge",
+      "divider",
     ]) {
       expect(isSupported(t)).toBe(true);
     }
   });
 
-  it("does not support post-MVP types", () => {
-    expect(isSupported("input")).toBe(false);
-    expect(isSupported("navbar")).toBe(false);
-    expect(isSupported("table")).toBe(false);
-    expect(isSupported("avatar")).toBe(false);
-    expect(isSupported("badge")).toBe(false);
-    expect(isSupported("divider")).toBe(false);
+  it("does not support unknown types", () => {
+    expect(isSupported("modal")).toBe(false);
+    expect(isSupported("dropdown")).toBe(false);
+    expect(isSupported("tooltip")).toBe(false);
   });
 });

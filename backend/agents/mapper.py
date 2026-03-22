@@ -26,6 +26,14 @@ Rules:
 7. Do NOT invent components or tokens not in the design system.
 8. Every button MUST have a "label" prop with meaningful text.
 9. Every input MUST have a "label" prop with descriptive text.
+10. Apply spacing tokens consistently: sections use "md" or "lg" spacing,
+    rows use "md" spacing, cards use "md" padding.
+11. Apply "surface" background to cards by default. Do NOT apply background to sections.
+12. Apply shadows: cards get "sm" shadow, elevated cards get "md" shadow.
+13. Every text component MUST have a "color" token: headings use "text-primary",
+    body text uses "text-primary" or "text-secondary", captions use "text-muted".
+14. Preserve "title" props on sections — do NOT remove existing props.
+15. Apply borderRadius "md" to cards and buttons, "sm" to inputs, "full" to avatars.
 
 Output ONLY valid JSON matching the provided schema.\
 """

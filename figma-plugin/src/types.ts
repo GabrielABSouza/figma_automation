@@ -1,6 +1,6 @@
 /** Component type strings — layout types are structural, the rest are DS components. */
 export type LayoutType = "section" | "row" | "column" | "stack";
-export type LeafType = "text" | "card" | "button";
+export type LeafType = "text" | "card" | "button" | "input" | "navbar" | "table" | "avatar" | "badge" | "divider";
 export type ComponentType = LayoutType | LeafType;
 
 export const LAYOUT_TYPES: ReadonlySet<string> = new Set([

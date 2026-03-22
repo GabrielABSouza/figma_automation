@@ -7,7 +7,7 @@ const ctx = await esbuild.context({
   bundle: true,
   outfile: "dist/code.js",
   format: "iife",
-  target: "es2020",
+  target: "es2015",
   sourcemap: false,
   logLevel: "info",
 });

@@ -29,6 +29,18 @@ Rules:
    - button: {"label": "action text"}
    - input: {"label": "field name", "placeholder": "hint"}
 9. Generate a realistic, functional UI — not just placeholder elements.
+10. Every section MUST have a "title" prop with a descriptive heading for that section.
+    Example: {"title": "Recent Activity"}, {"title": "Team Members"}.
+11. When placing multiple cards in a row, give all cards the SAME structural depth
+    (same number of child components). This ensures visual balance.
+12. Use sections as the top-level grouping. Each section should contain one logical
+    group: a heading area, a content area with rows/columns, or a single feature block.
+13. For dashboard-style screens, use this pattern:
+    section(title) -> row -> [card, card, card] for metric grids,
+    section(title) -> column -> [table or card] for detail areas.
+14. Use dividers between major sections when the screen has 3+ sections.
+15. Navbars should be the FIRST component at the root level (direct child of screen),
+    not nested inside a section.
 
 Output ONLY valid JSON matching the provided schema.\
 """
@@ -56,7 +68,10 @@ def _build_user_prompt(
         f"TARGET SCREEN: {screen_name}\n"
         f"PURPOSE: {screen_purpose}\n\n"
         f"Create a hierarchical layout with sections, rows/columns, and leaf "
-        f"components appropriate for this screen's purpose. Use semantic prop values."
+        f"components appropriate for this screen's purpose. Use semantic prop values.\n\n"
+        f"IMPORTANT: Every section must have a title prop. Cards in the same row "
+        f"should have a similar number of children for visual balance. If this screen "
+        f"needs navigation, place a navbar at the root level before any sections."
     )
 
 

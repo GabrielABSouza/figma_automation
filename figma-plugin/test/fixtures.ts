@@ -49,6 +49,57 @@ export const DASHBOARD_SCREEN: Screen = {
   validation: { is_valid: true, errors: [], warnings: [] },
 };
 
+export const SIMPLE_INPUT: UIComponent = {
+  id: "Form_input_1",
+  type: "input",
+  props: { label: "Email Address", placeholder: "you@example.com" },
+  tokens: { border: "border", background: "background" },
+  children: [],
+};
+
+export const SIMPLE_NAVBAR: UIComponent = {
+  id: "Dashboard_navbar_1",
+  type: "navbar",
+  props: { logo: "Acme Inc", items: ["Dashboard", "Reports", "Settings"] },
+  tokens: { background: "surface", border: "border" },
+  children: [],
+};
+
+export const SIMPLE_TABLE: UIComponent = {
+  id: "Dashboard_table_1",
+  type: "table",
+  props: {
+    columns: [{ header: "Name" }, { header: "Status" }, { header: "Date" }],
+    rows: 3,
+  },
+  tokens: { border: "border" },
+  children: [],
+};
+
+export const SIMPLE_AVATAR: UIComponent = {
+  id: "Profile_avatar_1",
+  type: "avatar",
+  props: { initials: "JD", size: "md", variant: "circle" },
+  tokens: { background: "primary" },
+  children: [],
+};
+
+export const SIMPLE_BADGE: UIComponent = {
+  id: "Dashboard_badge_1",
+  type: "badge",
+  props: { label: "Active", variant: "success" },
+  tokens: {},
+  children: [],
+};
+
+export const SIMPLE_DIVIDER: UIComponent = {
+  id: "Dashboard_divider_1",
+  type: "divider",
+  props: { variant: "horizontal" },
+  tokens: { color: "border" },
+  children: [],
+};
+
 export const SAMPLE_RESPONSE: GenerateUIResponse = {
   success: true,
   screens: [DASHBOARD_SCREEN],
