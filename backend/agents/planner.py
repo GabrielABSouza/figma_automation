@@ -3,6 +3,8 @@
 In MVP, also handles intent extraction (substituting the Interpreter agent).
 """
 
+import logging
+
 from pydantic import BaseModel, Field
 
 from backend.llm.factory import get_llm
@@ -12,6 +14,8 @@ from backend.orchestrator.state import (
     PipelineState,
     ScreenPlan,
 )
+
+logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """\
 You are a senior product designer and information architect.
@@ -58,10 +62,20 @@ async def plan(state: PipelineState) -> PipelineState:
     """Generate a design plan with screens and navigation from raw input."""
     llm = get_llm()
 
+    user_prompt = _build_user_prompt(state.raw_input)
+    logger.debug("Planner prompt:\n%s", user_prompt)
+
     result = await llm.generate(
-        prompt=_build_user_prompt(state.raw_input),
+        prompt=user_prompt,
         output_schema=PlannerOutput,
         system_prompt=SYSTEM_PROMPT,
+    )
+
+    logger.info(
+        "Planner result: product_type=%s, screens=%s, nav=%s",
+        result.product_type,
+        [s.name for s in result.screens],
+        result.navigation_flow,
     )
 
     # Populate interpreted input (MVP substitute for the Interpreter agent)
