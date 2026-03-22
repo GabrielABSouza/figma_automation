@@ -84,3 +84,22 @@ class NotImplementedResponse(BaseModel):
 
     status: str = "not_implemented"
     message: str = "This endpoint is not yet implemented."
+
+
+# ─── Design Pipeline (v2) Response Models ───
+
+
+class DesignScreenResponse(BaseModel):
+    """A single screen with its Figma node tree."""
+
+    screen_name: str
+    tree: dict[str, Any] = Field(default_factory=dict)
+
+
+class GenerateDesignResponse(BaseModel):
+    """Response body for POST /generate-design."""
+
+    success: bool
+    screens: list[DesignScreenResponse] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)

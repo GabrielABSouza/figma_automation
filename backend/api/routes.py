@@ -5,8 +5,10 @@ import logging
 from fastapi import APIRouter
 
 from backend.api.models import (
+    DesignScreenResponse,
     DesignSystemResponse,
     ErrorResponse,
+    GenerateDesignResponse,
     GenerateUIRequest,
     GenerateUIResponse,
     NotImplementedResponse,
@@ -15,7 +17,7 @@ from backend.api.models import (
     ValidationResultResponse,
 )
 from backend.design_system.loader import load_design_system
-from backend.orchestrator.graph import run_pipeline
+from backend.orchestrator.graph import run_design_pipeline, run_pipeline
 from backend.orchestrator.state import UIComponent, ValidatedUI
 
 logger = logging.getLogger(__name__)
@@ -99,6 +101,49 @@ async def iterate_ui(
 ) -> NotImplementedResponse:
     """Partial re-run with user feedback. (Post-MVP)"""
     return NotImplementedResponse()
+
+
+@router.post(
+    "/generate-design",
+    response_model=GenerateDesignResponse,
+    responses={500: {"model": ErrorResponse}},
+)
+async def generate_design(request: GenerateUIRequest) -> GenerateDesignResponse:
+    """Design pipeline (v2): prompt -> HTML -> Figma node tree.
+
+    Uses the LLM to generate production-quality HTML with inline styles,
+    then converts to Figma node trees for direct rendering in the plugin.
+    """
+    logger.info("POST /generate-design — prompt: %s", request.prompt[:80])
+
+    try:
+        state = await run_design_pipeline(request.prompt)
+    except Exception as exc:
+        logger.exception("Unexpected error in design pipeline execution")
+        return GenerateDesignResponse(
+            success=False,
+            errors=[f"Design pipeline execution failed: {exc}"],
+            metadata={"prompt": request.prompt, "schema_version": SCHEMA_VERSION},
+        )
+
+    screens = [
+        DesignScreenResponse(screen_name=ft.screen_name, tree=ft.tree)
+        for ft in state.figma_trees
+    ]
+
+    has_pipeline_errors = len(state.errors) > 0
+    success = not has_pipeline_errors and len(screens) > 0
+
+    return GenerateDesignResponse(
+        success=success,
+        screens=screens,
+        errors=state.errors,
+        metadata={
+            "prompt": request.prompt,
+            "screen_count": len(screens),
+            "schema_version": SCHEMA_VERSION,
+        },
+    )
 
 
 @router.get(
